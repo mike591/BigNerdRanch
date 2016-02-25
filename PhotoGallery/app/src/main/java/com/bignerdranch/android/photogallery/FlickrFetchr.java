@@ -22,6 +22,16 @@ public class FlickrFetchr {
     private static final String TAG = "FlickrFetchr";
 
     private static final String API_Key = "19f474c86a8d628fbf32e0a2ef002e7e";
+    private static final String FETCH_RECENTS_METHOD = "flickr.photos.getRecent";
+    private static final String SEARCH_METHOD = "flickr.photos.search";
+    private static final Uri ENDPOINT = Uri.parse("https://api.flickr.com/services/rest/")
+            //The Uri.Builder is useful for generating a proper URL with all its parameters
+            .buildUpon()
+            .appendQueryParameter("api_key", API_Key)
+            .appendQueryParameter("format", "json")
+            .appendQueryParameter("nojsoncallback", "1")
+            .appendQueryParameter("extras", "url_s")
+            .build();
 
 
     public byte[] getUrlBytes(String urlSpec) throws IOException {
@@ -61,20 +71,21 @@ public class FlickrFetchr {
         return new String(getUrlBytes(urlSpec));
     }
 
-    public List<GalleryItem> fetchItems() {
+    public List<GalleryItem> fetchRecentPhotos(){
+        String url = buildUrl(FETCH_RECENTS_METHOD, null);
+        return downloadGalleryItems(url);
+    }
+
+    public List<GalleryItem> searchPhotos(String query) {
+        String url = buildUrl(SEARCH_METHOD, query);
+        return downloadGalleryItems(url);
+    }
+
+    private List<GalleryItem> downloadGalleryItems(String url) {
         List<GalleryItem> items = new ArrayList<>();
 
         //This builds the url and grabs the string generated in the getUrlBytes/getUrlString.
         try {
-            String url = Uri.parse("https://api.flickr.com/services/rest/")
-                    //The Uri.Builder is useful for generating a proper URL with all its parameters
-                    .buildUpon()
-                    .appendQueryParameter("method", "flickr.photos.getRecent")
-                    .appendQueryParameter("api_key", API_Key)
-                    .appendQueryParameter("format", "json")
-                    .appendQueryParameter("nojsoncallback", "1")
-                    .appendQueryParameter("extras", "url_s")
-                    .build().toString();
             //Once you have build the URL, you pass it through the getUrlString method
             String jsonString = getUrlString(url);
             Log.i(TAG, "Received JSON: " + jsonString);
@@ -88,6 +99,17 @@ public class FlickrFetchr {
         }
 
         return items;
+    }
+
+    //helper method to build URL for search or grabbing recent uploads
+    private String buildUrl(String method, String query) {
+        Uri.Builder uriBuilder = ENDPOINT.buildUpon()
+                .appendQueryParameter("method", method);
+        if (method.equals(SEARCH_METHOD)) {
+            uriBuilder.appendQueryParameter("text", query);
+        }
+
+        return uriBuilder.build().toString();
     }
 
     //The parseItems method goes through the jsonBody created from the fetchItems method and generates the list of gallery items.
