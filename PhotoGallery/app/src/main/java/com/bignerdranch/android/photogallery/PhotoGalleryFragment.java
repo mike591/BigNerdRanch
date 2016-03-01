@@ -30,7 +30,7 @@ import java.util.List;
  * Created by Mike on 2/19/2016.
  */
 //If we are creating a fragment, remember to extend Fragment
-public class PhotoGalleryFragment extends Fragment {
+public class PhotoGalleryFragment extends VisibleFragment {
     private static final String TAG = "PhotoGalleryFragment";
 
     //Need to create the RecyclerView
