@@ -132,6 +132,7 @@ public class FlickrFetchr {
             }
 
             item.setUrl(photoJsonObject.getString("url_s"));
+            item.setOwner(photoJsonObject.getString("owner"));
             //items is the list that contains each GalleryItem and we are adding into it each item that we've created/parsed
             items.add(item);
         }
