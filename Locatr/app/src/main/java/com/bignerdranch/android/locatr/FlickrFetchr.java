@@ -31,7 +31,7 @@ public class FlickrFetchr {
             .appendQueryParameter("api_key", API_Key)
             .appendQueryParameter("format", "json")
             .appendQueryParameter("nojsoncallback", "1")
-            .appendQueryParameter("extras", "url_s")
+            .appendQueryParameter("extras", "url_s, geo")
             .build();
 
 
@@ -147,6 +147,8 @@ public class FlickrFetchr {
 
             item.setUrl(photoJsonObject.getString("url_s"));
             item.setOwner(photoJsonObject.getString("owner"));
+            item.setLat(photoJsonObject.getDouble("latitude"));
+            item.setLon(photoJsonObject.getDouble("longitude"));
             //items is the list that contains each GalleryItem and we are adding into it each item that we've created/parsed
             items.add(item);
         }
